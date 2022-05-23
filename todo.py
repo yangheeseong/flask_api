@@ -54,16 +54,32 @@ class TodoSimple(Resource):
         """Todo 리스트에 todo_id와 일치하는 ID를 가진 할 일을 가져옵니다."""
         cursor = conn.cursor()
 
-        cursor.execute("SELECT TOP 10 * FROM [galaxiaTicket] WITH(NOLOCK)")
+        try:
+            #cursor.execute("SELECT TOP 10 * FROM [galaxiaTicket] WITH(NOLOCK)")
 
-        row = cursor.fetchone()
+            # query = str.format("SELECT TOP 10 * "
+            #                    "FROM [galaxiaTicket] WITH(NOLOCK) "
+            #                    "WHERE ORDER_DATE={0}", todo_id)
 
-        conn.close()
+            # cursor.execute(query)
 
-        return {
-            "todo_id": todo_id,
-            "data": row[0]
-        }
+            # row = cursor.fetchone()
+
+            cursor.callproc("SSM_orderRequestList_search",
+                            ("M-20220429000010747-F76CB68B", )
+                            )
+
+            for row in cursor:
+                order_signid = row[0]
+                order_itemcode = row[1]
+
+            return {
+                "order_signId": order_signid,
+                "order_itemCode": order_itemcode
+            }
+        finally:
+            cursor.close()
+            conn.close()
 
     @Todo.response(202, 'Success', todo_fields_with_id)
     @Todo.response(500, 'Failed')
