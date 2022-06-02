@@ -65,17 +65,23 @@ class TodoSimple(Resource):
 
             # row = cursor.fetchone()
 
-            cursor.callproc("SSM_orderRequestList_search",
-                            ("M-20220429000010747-F76CB68B", )
+            cursor.callproc("LJC_autoAccount_periodDate",
+                            ("take2015",
+                             "P-00001",
+                             )
                             )
 
             for row in cursor:
-                order_signid = row[0]
-                order_itemcode = row[1]
+                transaction_id = row[0]
+                order_id = row[1]
+                periodStartDate = row[2]
+                periodEndDate = row[3]
 
             return {
-                "order_signId": order_signid,
-                "order_itemCode": order_itemcode
+                "transaction_id": transaction_id,
+                "order_id": order_id,
+                "periodStartDate": periodStartDate,
+                "periodEndDate": periodEndDate
             }
         finally:
             cursor.close()
